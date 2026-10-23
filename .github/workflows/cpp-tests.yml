@@ -19,6 +19,7 @@ jobs:
         run: |
           mkdir -p build
           g++ -std=c++17 -Wall -Wextra -pedantic \
+            -Isrc \
             src/data_store.cpp \
             src/validation.cpp \
             src/reservation.cpp \
@@ -28,3 +29,29 @@ jobs:
 
       - name: Run cancellation tests
         run: ./build/test_cancellation
+
+      - name: Build train search tests
+        run: |
+          g++ -std=c++17 -Wall -Wextra -pedantic \
+            -Isrc \
+            src/data_store.cpp \
+            src/validation.cpp \
+            src/booking.cpp \
+            tests/test_train_search.cpp \
+            -o build/test_train_search
+
+      - name: Run train search tests
+        run: ./build/test_train_search
+
+      - name: Build booking tests
+        run: |
+          g++ -std=c++17 -Wall -Wextra -pedantic \
+            -Isrc \
+            src/data_store.cpp \
+            src/validation.cpp \
+            src/booking.cpp \
+            tests/test_booking.cpp \
+            -o build/test_booking
+
+      - name: Run booking tests
+        run: ./build/test_booking
