@@ -2,9 +2,8 @@
 #include "reservation.h"
 #include "cancellation.h"
 #include "validation.h"
+#include "booking.h"
 
-#include <algorithm>
-#include <cctype>
 #include <iostream>
 #include <limits>
 #include <string>
@@ -233,6 +232,7 @@ int main() {
     }
 
     int choice = -1;
+
     do {
       std::cout << "\n=== Railway Reservation System ===\n"
           << "1. Search trains\n"
@@ -246,13 +246,15 @@ int main() {
         if (!(std::cin >> choice)) {
             std::cin.clear();
             std::cin.ignore(
-                std::numeric_limits<std::streamsize>::max(), '\n');
+                std::numeric_limits<std::streamsize>::max(), '\n'
+            );
             std::cout << "Enter a valid menu number.\n";
             continue;
         }
 
         std::cin.ignore(
-            std::numeric_limits<std::streamsize>::max(), '\n');
+            std::numeric_limits<std::streamsize>::max(), '\n'
+        );
 
        
 switch (choice) {
