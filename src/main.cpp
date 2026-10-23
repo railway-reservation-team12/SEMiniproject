@@ -9,6 +9,8 @@
 #include <limits>
 #include <string>
 #include <vector>
+#include <fstream>
+#include <utility>
 
 std::string readLine(const std::string& prompt) {
     std::string value;
@@ -23,25 +25,71 @@ std::string lowerCase(std::string value) {
     return value;
 }
 
+
 bool searchTrains(const std::vector<Train>& trains) {
     std::string source = readLine("Enter source station: ");
     std::string destination = readLine("Enter destination station: ");
+    std::string date = readLine("Journey date (DD-MM-YYYY): ");
 
     if (!isValidStation(source) || !isValidStation(destination)) {
         std::cout << "Invalid station name.\n";
         return false;
     }
 
+    if (!isValidDate(date)) {
+        std::cout << "Invalid journey date. Use DD-MM-YYYY.\n";
+        return false;
+    }
+
+    // Read the available train schedules.
+    std::vector<std::pair<std::string, std::string>> schedules;
+    std::ifstream scheduleFile("data/schedules.dat");
+    if (!scheduleFile) {
+        std::cout << "Could not open data/schedules.dat.\n";
+        return false;
+    }
+
+    std::string line;
+    while (std::getline(scheduleFile, line)) {
+        if (line.empty() || line[0] == '#') {
+            continue;
+        }
+
+        std::size_t separator = line.find('|');
+        if (separator == std::string::npos) {
+            continue;
+        }
+
+        std::string trainId = line.substr(0, separator);
+        std::string journeyDate = line.substr(separator + 1);
+
+        schedules.push_back({trainId, journeyDate});
+    }
+
     source = lowerCase(source);
     destination = lowerCase(destination);
     bool found = false;
 
-    std::cout << "\nMatching trains:\n";
+    std::cout << "\nMatching trains for " << date << ":\n";
+
     for (const auto& train : trains) {
-        if (lowerCase(train.source) == source &&
-            lowerCase(train.destination) == destination) {
+        bool routeMatches =
+            lowerCase(train.source) == source &&
+            lowerCase(train.destination) == destination;
+
+        bool dateMatches = false;
+        for (const auto& schedule : schedules) {
+            if (schedule.first == train.trainId &&
+                schedule.second == date) {
+                dateMatches = true;
+                break;
+            }
+        }
+
+        if (routeMatches && dateMatches) {
             std::cout << train.trainId << " | " << train.trainName
-                      << " | " << train.source << " -> " << train.destination
+                      << " | " << train.source << " -> "
+                      << train.destination
                       << " | Departure: " << train.departureTime
                       << " | Arrival: " << train.arrivalTime
                       << " | Available seats: " << train.availableSeats
@@ -51,10 +99,34 @@ bool searchTrains(const std::vector<Train>& trains) {
     }
 
     if (!found) {
-        std::cout << "No trains found for that route.\n";
+        std::cout << "No trains found for that route and journey date.\n";
     }
+
     return found;
 }
+
+
+void displayTrainDetails(std::vector<Train>& trains)  {
+    std::string trainId = readLine("Enter train ID: ");
+
+    Train* train = findTrainById(trains, trainId);
+
+    if (train == nullptr) {
+        std::cout << "Train not found. Please enter a valid train ID.\n";
+        return;
+    }
+
+    std::cout << "\n=== Train Details ===\n"
+              << "Train ID: " << train->trainId << '\n'
+              << "Train Name: " << train->trainName << '\n'
+              << "Source: " << train->source << '\n'
+              << "Destination: " << train->destination << '\n'
+              << "Departure: " << train->departureTime << '\n'
+              << "Arrival: " << train->arrivalTime << '\n'
+              << "Total Seats: " << train->totalSeats << '\n'
+              << "Available Seats: " << train->availableSeats << '\n';
+}
+
 
 void bookReservation(std::vector<Train>& trains,
                      std::vector<Reservation>& reservations) {
@@ -162,13 +234,14 @@ int main() {
 
     int choice = -1;
     do {
-        std::cout << "\n=== Railway Reservation System ===\n"
-                  << "1. Search trains\n"
-                  << "2. Book reservation\n"
-                  << "3. View reservation\n"
-                  << "4. Cancel reservation\n"
-                  << "0. Exit\n"
-                  << "Enter choice: ";
+      std::cout << "\n=== Railway Reservation System ===\n"
+          << "1. Search trains\n"
+          << "2. Book reservation\n"
+          << "3. View reservation\n"
+          << "4. Cancel reservation\n"
+          << "5. Display train details\n"
+          << "0. Exit\n"
+          << "Enter choice: ";
 
         if (!(std::cin >> choice)) {
             std::cin.clear();
@@ -181,25 +254,35 @@ int main() {
         std::cin.ignore(
             std::numeric_limits<std::streamsize>::max(), '\n');
 
-        switch (choice) {
-            case 1:
-                searchTrains(trains);
-                break;
-            case 2:
-                bookReservation(trains, reservations);
-                break;
-            case 3:
-                viewReservationFlow(reservations, trains);
-                break;
-            case 4:
-                cancelReservationFlow(reservations, trains);
-                break;
-            case 0:
-                std::cout << "Exiting Railway Reservation System.\n";
-                break;
-            default:
-                std::cout << "Invalid choice. Try again.\n";
-        }
+       
+switch (choice) {
+    case 1:
+        searchTrains(trains);
+        break;
+
+    case 2:
+        bookReservation(trains, reservations);
+        break;
+
+    case 3:
+        viewReservationFlow(reservations, trains);
+        break;
+
+    case 4:
+        cancelReservationFlow(reservations, trains);
+        break;
+
+    case 5:
+        displayTrainDetails(trains);
+        break;
+
+    case 0:
+        std::cout << "Exiting Railway Reservation System.\n";
+        break;
+
+    default:
+        std::cout << "Invalid choice. Try again.\n";
+}
     } while (choice != 0);
 
     return 0;
