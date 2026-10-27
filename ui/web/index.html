@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Railway Reservation System - Team 12</title>
+<style>
+body{font-family:system-ui,sans-serif;max-width:860px;margin:0 auto;padding:16px;background:#f5f6f8;color:#1b1f24}
+h1{font-size:1.3rem}nav button{padding:8px 14px;border:0;background:#dde1e7;cursor:pointer;border-radius:6px 6px 0 0}
+nav button.on{background:#1f5fbf;color:#fff}section{display:none;background:#fff;padding:16px;border-radius:0 6px 6px 6px}
+section.on{display:block}label{display:block;margin:8px 0 2px;font-size:.85rem}
+input,select{padding:7px;width:100%;max-width:320px;box-sizing:border-box}
+button.go{margin-top:12px;padding:8px 16px;background:#1f5fbf;color:#fff;border:0;border-radius:6px;cursor:pointer}
+button.danger{background:#b3261e}table{border-collapse:collapse;width:100%;margin-top:12px;font-size:.9rem}
+th,td{border-bottom:1px solid #ddd;padding:6px;text-align:left}.msg{margin-top:12px;padding:10px;border-radius:6px}
+.ok{background:#e3f4e6}.err{background:#fde7e5}.card{background:#f0f4fa;padding:12px;border-radius:6px;margin-top:12px;line-height:1.6}
+</style></head><body>
+<h1>Railway Reservation System</h1>
+<nav><button data-t="trains" class="on">Trains</button><button data-t="search">Search</button>
+<button data-t="book">Book Ticket</button><button data-t="res">View / Cancel</button></nav>
+
+<section id="trains" class="on"><div id="trainsOut"></div></section>
+
+<section id="search"><form id="fs">
+<label>Source</label><input name="source" required><label>Destination</label><input name="destination" required>
+<label>Journey date (DD-MM-YYYY)</label><input name="date" required placeholder="25-12-2026">
+<button class="go">Search</button></form><div id="searchOut"></div></section>
+
+<section id="book"><form id="fb">
+<label>Train</label><select name="trainId" id="trainSel" required></select>
+<label>Passenger name</label><input name="name" required><label>Age</label><input name="age" required>
+<label>Gender</label><select name="gender"><option>M</option><option>F</option><option>Other</option></select>
+<label>Journey date (DD-MM-YYYY)</label><input name="date" required placeholder="25-12-2026">
+<label>Number of seats</label><input name="seats" value="1" required>
+<button class="go">Book</button></form><div id="bookOut"></div></section>
+
+<section id="res"><form id="fr"><label>Reservation ID</label><input name="id" required placeholder="RES001">
+<button class="go">View reservation</button></form><div id="resOut"></div></section>
+
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+async function api(url,opt){const r=await fetch(url,opt);const j=await r.json();if(!r.ok)throw new Error(j.error||'Request failed');return j;}
+const post=o=>({method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams(o)});
+const msg=(el,t,ok)=>$(el).innerHTML=`<div class="msg ${ok?'ok':'err'}">${esc(t)}</div>`;
+function table(ts){if(!ts.length)return'<div class="msg err">No trains found.</div>';
+return'<table><tr><th>ID</th><th>Name</th><th>Route</th><th>Dep</th><th>Arr</th><th>Seats</th></tr>'+
+ts.map(t=>`<tr><td>${esc(t.trainId)}</td><td>${esc(t.trainName)}</td><td>${esc(t.source)} &rarr; ${esc(t.destination)}</td><td>${esc(t.departureTime)}</td><td>${esc(t.arrivalTime)}</td><td>${t.availableSeats}/${t.totalSeats}${t.availableSeats?'':' (full)'}</td></tr>`).join('')+'</table>';}
+async function loadTrains(){try{const ts=await api('/api/trains');$('#trainsOut').innerHTML=table(ts);
+$('#trainSel').innerHTML=ts.map(t=>`<option value="${esc(t.trainId)}">${esc(t.trainId)} - ${esc(t.trainName)} (${t.availableSeats} seats)</option>`).join('');}
+catch(e){msg('#trainsOut',e.message)}}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
+document.querySelectorAll('nav button,section').forEach(x=>x.classList.remove('on'));b.classList.add('on');$('#'+b.dataset.t).classList.add('on');
+if(b.dataset.t==='trains'||b.dataset.t==='book')loadTrains();});
+$('#fs').onsubmit=async e=>{e.preventDefault();try{$('#searchOut').innerHTML=table(await api('/api/search?'+new URLSearchParams(new FormData(e.target))));}catch(x){msg('#searchOut',x.message)}};
+$('#fb').onsubmit=async e=>{e.preventDefault();try{const r=await api('/api/book',post(new FormData(e.target)));
+$('#bookOut').innerHTML=`<div class="msg ok">Booking successful!</div>`+card(r);loadTrains();}catch(x){msg('#bookOut',x.message)}};
+function card(r){return`<div class="card"><b>Reservation ID:</b> ${esc(r.reservationId)}<br><b>Train:</b> ${esc(r.trainId)} - ${esc(r.trainName)}<br><b>Route:</b> ${esc(r.route)}<br><b>Passenger:</b> ${esc(r.passengerName)}, ${r.age}, ${esc(r.gender)}<br><b>Date:</b> ${esc(r.journeyDate)}<br><b>Seats:</b> ${r.seats}<br><b>Status:</b> ${esc(r.status)}</div>`;}
+async function view(id){try{const r=await api('/api/reservation?id='+encodeURIComponent(id));
+$('#resOut').innerHTML=card(r)+(r.status==='Confirmed'?`<button class="go danger" id="cx">Cancel this reservation</button>`:'');
+if($('#cx'))$('#cx').onclick=async()=>{if(!confirm('Cancel reservation '+r.reservationId+'?'))return;
+try{const m=await api('/api/cancel',post({id:r.reservationId}));await view(id);$('#resOut').insertAdjacentHTML('afterbegin',`<div class="msg ok">${esc(m.message)}</div>`);}catch(x){msg('#resOut',x.message)}};}
+catch(x){msg('#resOut',x.message)}}
+$('#fr').onsubmit=e=>{e.preventDefault();view(new FormData(e.target).get('id'));};
+loadTrains();
+</script></body></html>
