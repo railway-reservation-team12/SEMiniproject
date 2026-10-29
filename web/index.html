@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Velocity · Luxury Railway Reservation System</title>
+  <meta name="description" content="Ultra-premium railway reservation portal. Studio grade design, real-time seat inventory, and synchronized state persistence for PES University Team 12.">
+
+  <!-- Google Fonts for Editorial Luxury Feel -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Specular 300px Radial Glow following Cursor -->
+  <div id="cursor-glow" aria-hidden="true"></div>
+
+  <!-- ── Site Header ──────────────────────────────────────────────────────── -->
+  <header class="site-header" role="banner">
+    <div class="brand-wrapper" id="brand-home-btn" tabindex="0">
+      <div class="brand-emblem" aria-hidden="true">VR</div>
+      <div>
+        <div class="brand-title">Velocity Rail</div>
+      </div>
+      <span class="brand-tag">Team 12 · PESU</span>
+    </div>
+
+    <nav aria-label="Main Navigation">
+      <ul class="nav-links">
+        <li><a href="#trains-section" class="nav-link">Express Routes</a></li>
+        <li><a href="#lookup-section" class="nav-link">Ticket Vault</a></li>
+        <li><a href="#cancellation-section" class="nav-link">Cancellation</a></li>
+      </ul>
+    </nav>
+
+    <div class="header-actions">
+      <!-- Command Palette Trigger Button -->
+      <button class="cmd-palette-btn" id="open-cmd-btn" aria-label="Open Command Palette (Ctrl+K)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <span>Search</span>
+        <span class="kbd-badge">⌘K</span>
+      </button>
+
+      <!-- Theme Toggle Button -->
+      <button class="theme-toggle-btn" id="theme-toggle-btn" aria-label="Toggle Light and Dark Mode">
+        <svg id="theme-icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+      </button>
+
+      <!-- Primary Magnetic CTA -->
+      <button class="btn-primary magnetic-btn" id="hero-book-btn">
+        <span>Book Passage</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ── Main Content Container ────────────────────────────────────────────── -->
+  <main class="main-container">
+
+    <!-- Hero Section -->
+    <section class="hero-section stagger-in">
+      <h1 class="headline-hero">The Art of Grand Rail Journeys.</h1>
+      <p class="subheadline-hero">
+        Precision reservation engineering, real-time seat inventory, and synchronized state persistence for the modern luxury traveler.
+      </p>
+
+      <!-- Search Ribbon with Route Filters -->
+      <div class="search-ribbon stagger-in" id="search-bar-wrap">
+        <div class="field-group">
+          <label class="field-label" for="search-source">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle></svg>
+            Origin Station
+          </label>
+          <select id="search-source" class="field-select" aria-label="Origin Station">
+            <option value="" selected>Choose origin</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="search-dest">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            Destination
+          </label>
+          <select id="search-dest" class="field-select" aria-label="Destination">
+            <option value="" selected>Choose destination</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="search-date">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            Journey Date
+          </label>
+          <div class="datepicker-input-wrapper">
+            <input type="text" id="search-date" class="field-input datepicker-input" placeholder="Select Journey Date" autocomplete="off" readonly>
+            <button type="button" class="datepicker-trigger-btn" aria-label="Open Calendar">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            </button>
+          </div>
+        </div>
+
+        <button class="btn-primary magnetic-btn" id="filter-trains-btn">
+          <span>Search</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </button>
+      </div>
+
+      <!-- Stats Grid (3 Distinct Variants: Ice Silver, Pale Lavender, Platinum) -->
+      <div class="stats-grid stagger-in">
+        <!-- Variant 1: Ice Silver -->
+        <div class="stat-card stat-card-silver">
+          <div class="stat-header">
+            <span class="label-caps">Active Network</span>
+            <div class="stat-icon avatar-marigold">TR</div>
+          </div>
+          <div class="stat-number" id="stat-trains-count">0</div>
+          <div class="stat-desc">Express trains operating with real-time timetable sync</div>
+        </div>
+
+        <!-- Variant 2: Pale Lavender -->
+        <div class="stat-card stat-card-lavender">
+          <div class="stat-header">
+            <span class="label-caps">Seat Inventory</span>
+            <div class="stat-icon avatar-electric">ST</div>
+          </div>
+          <div class="stat-number" id="stat-seats-count">0</div>
+          <div class="stat-desc">Total seat capacity per journey across the express network</div>
+        </div>
+
+        <!-- Variant 3: Platinum Silver -->
+        <div class="stat-card stat-card-platinum">
+          <div class="stat-header">
+            <span class="label-caps">Pass Vault</span>
+            <div class="stat-icon avatar-lemon">BK</div>
+          </div>
+          <div class="stat-number" id="stat-reservations-count">0</div>
+          <div class="stat-desc">Confirmed passenger reservations stored in repository</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Scheduled Trains Section ────────────────────────────────────────── -->
+    <section id="trains-section" class="stagger-in">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <span class="label-caps">Fleet & Schedules</span>
+          <h2 class="section-title">Grand Express Timetables</h2>
+          <p class="section-subtitle">Real-time availability directly synchronized with project data store</p>
+        </div>
+        <div>
+          <button class="btn-secondary" id="reset-filters-btn">View All Lines</button>
+        </div>
+      </div>
+
+      <!-- Trains Grid Container -->
+      <div class="trains-grid" id="trains-container">
+        <!-- Injected via JavaScript -->
+      </div>
+
+      <!-- Empty State (Hidden by default) -->
+      <div class="empty-state" id="empty-trains-state" style="display: none;">
+        <div class="empty-blobs-canvas"></div>
+        <div class="empty-state-content">
+          <h3 style="font-family: var(--font-serif); font-size: 32px; margin-bottom: 12px;">No journeys found on this horizon</h3>
+          <p style="color: var(--text-secondary); max-width: 480px; margin: 0 auto 24px;">
+            We could not locate any express trains matching your specified origin, destination, or date.
+          </p>
+          <button class="btn-primary magnetic-btn" id="empty-reset-btn">Reset All Filters</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Ticket Vault & Boarding Pass Section ─────────────────────────────── -->
+    <section id="lookup-section" class="stagger-in" style="margin-top: 80px;">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <span class="label-caps">Verification & Boarding Pass</span>
+          <h2 class="section-title">Digital Ticket Vault</h2>
+          <p class="section-subtitle">Access your verified digital boarding pass and travel credentials</p>
+        </div>
+      </div>
+
+      <div class="search-ribbon" style="max-width: 680px; margin: 0 auto 32px; grid-template-columns: 1fr auto;">
+        <div class="field-group">
+          <label class="field-label" for="lookup-id-input">Reservation ID</label>
+          <input type="text" id="lookup-id-input" class="field-input" placeholder="Enter Reservation ID (e.g. RES002)" autocomplete="off">
+        </div>
+        <button class="btn-primary magnetic-btn" id="lookup-btn">
+          <span>Retrieve Pass</span>
+        </button>
+      </div>
+
+      <!-- Digital Boarding Pass Display -->
+      <div class="ticket-container" id="ticket-display-container">
+        <!-- Rendered via JS -->
+      </div>
+    </section>
+
+    <!-- ── Cancellation Portal Section ─────────────────────────────────────── -->
+    <section id="cancellation-section" class="stagger-in" style="margin-top: 80px;">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <span class="label-caps">Booking Management</span>
+          <h2 class="section-title">Ticket Cancellation Portal</h2>
+        </div>
+      </div>
+
+      <div class="search-ribbon" style="max-width: 680px; margin: 0 auto 24px; grid-template-columns: 1fr auto;">
+        <div class="field-group">
+          <label class="field-label" for="cancel-id-input">Reservation ID to Cancel</label>
+          <input type="text" id="cancel-id-input" class="field-input" placeholder="Enter Reservation ID (e.g. RES002)" autocomplete="off">
+        </div>
+        <button class="btn-danger" id="cancel-trigger-btn">
+          <span>Cancel Ticket</span>
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ── Interactive Booking Drawer / Modal (Key: N) ────────────────────────── -->
+  <div class="modal-overlay" id="booking-modal" role="dialog" aria-modal="true" aria-labelledby="modal-book-title">
+    <div class="drawer-dialog">
+      <button class="modal-close-btn" id="close-booking-modal" aria-label="Close modal">✕</button>
+      <div style="margin-bottom: 24px;">
+        <span class="label-caps">Secure Booking</span>
+        <h3 id="modal-book-title" style="font-size: 28px; margin-top: 6px;">Issue Journey Ticket</h3>
+      </div>
+
+      <form id="booking-form">
+        <div class="field-group" style="margin-bottom: 18px;">
+          <label class="field-label" for="book-train-select">Select Express Line</label>
+          <select id="book-train-select" class="field-select" required></select>
+        </div>
+
+        <div class="field-group" style="margin-bottom: 18px;">
+          <label class="field-label" for="book-passenger-name">Passenger Full Name</label>
+          <input type="text" id="book-passenger-name" class="field-input" placeholder="e.g. Eleanor Vance" required maxlength="60">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px;">
+          <div class="field-group">
+            <label class="field-label" for="book-passenger-age">Age (1–120)</label>
+            <input type="number" id="book-passenger-age" class="field-input" min="1" max="120" placeholder="28" required>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="book-passenger-gender">Gender</label>
+            <select id="book-passenger-gender" class="field-select" required>
+              <option value="M">Male (M)</option>
+              <option value="F">Female (F)</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+          <div class="field-group">
+            <label class="field-label" for="book-journey-date">Journey Date</label>
+            <div class="datepicker-input-wrapper">
+              <input type="text" id="book-journey-date" class="field-input datepicker-input" placeholder="Select Date" required readonly>
+              <button type="button" class="datepicker-trigger-btn" aria-label="Open Calendar">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+              </button>
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="book-seat-count">Seats to Reserve</label>
+            <input type="number" id="book-seat-count" class="field-input" min="1" max="6" value="1" required>
+          </div>
+        </div>
+
+        <div id="booking-error-msg" style="color: var(--c-crimson); font-size: 13px; margin-bottom: 16px; display: none;"></div>
+
+        <div style="display: flex; gap: 14px; justify-content: flex-end;">
+          <button type="button" class="btn-secondary" id="cancel-booking-btn">Discard</button>
+          <button type="submit" class="btn-primary magnetic-btn" id="submit-booking-btn">
+            <span>Confirm & Reserve</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ── Command Palette (CMD+K / Ctrl+K) ──────────────────────────────────── -->
+  <div class="modal-overlay" id="cmd-palette-modal" role="dialog" aria-modal="true" aria-label="Command Menu">
+    <div class="cmd-palette-dialog">
+      <div class="cmd-search-box">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input type="text" id="cmd-input" class="cmd-search-input" placeholder="Search lines, reservations, or actions..." autocomplete="off">
+        <span class="kbd-badge">ESC to close</span>
+      </div>
+      <ul class="cmd-results-list" id="cmd-results-list">
+        <!-- Results rendered dynamically via JS -->
+      </ul>
+    </div>
+  </div>
+
+  <!-- ── 4-Second Optimistic Undo Toast ────────────────────────────────────── -->
+  <div class="undo-toast" id="undo-toast" role="status" aria-live="polite">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+    <span id="undo-toast-text">Reservation cancelled. Available seats restored.</span>
+    <button class="undo-btn" id="undo-btn">Undo Action</button>
+    <div class="toast-progress-bar"></div>
+  </div>
+
+  <!-- ── Minimal Footer (12 Color Swatch Dots + Team Info) ─────────────────── -->
+  <footer class="site-footer">
+    <div class="color-dots-palette" aria-label="12-Color Design System Swatches">
+      <div class="color-dot" style="background: #DDE3E8;" title="1. ICE SILVER #DDE3E8"></div>
+      <div class="color-dot" style="background: #3A0F34;" title="2. DEEP AUBERGINE #3A0F34"></div>
+      <div class="color-dot" style="background: #EAAA00;" title="3. MARIGOLD #EAAA00"></div>
+      <div class="color-dot" style="background: #6F4E37;" title="4. MOCHA BROWN #6F4E37"></div>
+      <div class="color-dot" style="background: #E5E4E2;" title="5. PLATINUM SILVER #E5E4E2"></div>
+      <div class="color-dot" style="background: #E6E0F0;" title="6. PALE LAVENDER #E6E0F0"></div>
+      <div class="color-dot" style="background: #171717;" title="7. CHARCOAL BLACK #171717"></div>
+      <div class="color-dot" style="background: #06110C;" title="8. FOREST GREEN #06110C"></div>
+      <div class="color-dot" style="background: #A31C1B;" title="9. CRIMSON RED #A31C1B"></div>
+      <div class="color-dot" style="background: #FFF21A;" title="10. LEMON #FFF21A"></div>
+      <div class="color-dot" style="background: #A66BFF;" title="11. ELECTRIC LAVENDER #A66BFF"></div>
+      <div class="color-dot" style="background: #171717;" title="12. CHARCOAL BLACK #171717"></div>
+    </div>
+    <div class="footer-copy">
+      © 2026 Team 12 Railway Reservation System · PES University Section F
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
