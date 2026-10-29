@@ -36,8 +36,9 @@ int main() {
         }
     };
 
-    const std::string trainFile = "/tmp/test_trains.dat";
-    const std::string reservationFile = "/tmp/test_reservations.dat";
+    const std::string trainFile = "build/test_trains.dat";
+    const std::string reservationFile =
+"build/test_reservations.dat";
 
     std::vector<Train> trains = {
         {
