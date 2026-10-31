@@ -1,5 +1,7 @@
 #include "booking.h"
 #include "models.h"
+#include "data_store.h"
+#include "validation.h"
 
 #include <cstdio>
 #include <iostream>
@@ -311,6 +313,130 @@ int main() {
         );
     }
 
+    // ------------------------------------------------------------
+    // TC-004 / TC-012: Unique reservation references and restart
+    // ------------------------------------------------------------
+    {
+        CinRedirect input(
+            "T001\n"
+            "Second Passenger\n"
+            "30\n"
+            "M\n"
+            "27-12-2026\n"
+            "1\n"
+        );
+
+        bool secondBooking = bookReservation(
+            trains,
+            reservations,
+            trainFile,
+            reservationFile
+        );
+
+        check(
+            secondBooking,
+            "TC-004: Second booking succeeds"
+        );
+
+        check(
+            reservations.size() == 2,
+            "TC-004: Two successful bookings are stored"
+        );
+
+        if (reservations.size() >= 2) {
+            const std::string& firstId = reservations[0].reservationId;
+            const std::string& secondId = reservations[1].reservationId;
+
+            check(
+                firstId != secondId,
+                "TC-004: Successful bookings receive unique reservation references"
+            );
+
+            check(
+                isValidReservationId(firstId) &&
+                isValidReservationId(secondId) &&
+                firstId.length() <= 20 &&
+                secondId.length() <= 20,
+                "TC-004: Reservation references satisfy the 20-character format"
+            );
+
+            std::cout << "Evidence: Booking 1 reference = "
+                      << firstId << '\n';
+
+            std::cout << "Evidence: Booking 2 reference = "
+                      << secondId << '\n';
+        }
+
+        // Simulate program restart by reloading persisted reservations.
+        std::vector<Reservation> reloadedReservations =
+            loadReservations(reservationFile);
+
+        check(
+            reloadedReservations.size() == 2,
+            "TC-012: Reservations persist across program restart"
+        );
+
+        if (reloadedReservations.size() >= 2) {
+            reservations = reloadedReservations;
+
+            CinRedirect inputAfterRestart(
+                "T001\n"
+                "Third Passenger\n"
+                "28\n"
+                "F\n"
+                "28-12-2026\n"
+                "1\n"
+            );
+
+            bool thirdBooking = bookReservation(
+                trains,
+                reservations,
+                trainFile,
+                reservationFile
+            );
+
+            check(
+                thirdBooking,
+                "TC-012: Booking succeeds after program restart"
+            );
+
+            check(
+                reservations.size() == 3,
+                "TC-012: Third booking is stored after restart"
+            );
+
+            if (reservations.size() == 3) {
+                const std::string& firstId =
+                    reservations[0].reservationId;
+
+                const std::string& secondId =
+                    reservations[1].reservationId;
+
+                const std::string& thirdId =
+                    reservations[2].reservationId;
+
+                check(
+                    thirdId != firstId &&
+                    thirdId != secondId,
+                    "TC-012: Post-restart reservation reference remains unique"
+                );
+
+                check(
+                    isValidReservationId(thirdId) &&
+                    thirdId.length() <= 20,
+                    "TC-012: Post-restart reference satisfies the 20-character format"
+                );
+
+                std::cout << "Evidence: Reloaded references = "
+                          << firstId << ", "
+                          << secondId << '\n';
+
+                std::cout << "Evidence: Post-restart booking reference = "
+                          << thirdId << '\n';
+            }
+        }
+    }
+
     // Clean up temporary test files.
     std::remove(trainFile.c_str());
     std::remove(reservationFile.c_str());
@@ -318,6 +444,7 @@ int main() {
     // ------------------------------------------------------------
     // Summary
     // ------------------------------------------------------------
+
     std::cout << "\n========================================\n";
     std::cout << "BOOKING TEST SUMMARY\n";
     std::cout << "========================================\n";
