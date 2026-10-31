@@ -73,7 +73,7 @@ bool bookReservation(
         return false;
     }
 
-    std::string trainId = readLine("Enter train ID: ");
+    std::string trainId = readLine("Enter train ID to book: ");
     Train* train = findTrainById(trains, trainId);
 
     if (train == nullptr) {
@@ -81,13 +81,13 @@ bool bookReservation(
         return false;
     }
 
-    std::string name = readLine("Passenger name: ");
+    std::string name = readLine("Enter passenger name: ");
     if (!isValidPassengerName(name)) {
         std::cout << "Invalid passenger name.\n";
         return false;
     }
 
-    std::string ageText = readLine("Passenger age: ");
+    std::string ageText = readLine("Enter passenger age: ");
     int age = 0;
 
     try {
@@ -103,7 +103,7 @@ bool bookReservation(
         return false;
     }
 
-    std::string gender = readLine("Passenger gender: ");
+    std::string gender = readLine("Enter passenger gender (M/F): ");
     if (!isValidGender(gender)) {
         std::cout << "Invalid gender value.\n";
         return false;
@@ -115,7 +115,7 @@ bool bookReservation(
         return false;
     }
 
-    std::string seatsText = readLine("Number of seats: ");
+    std::string seatsText = readLine("Enter number of seats to book: ");
     int seats = 0;
 
     try {
