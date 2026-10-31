@@ -5,9 +5,8 @@ on:
   pull_request:
 
 jobs:
-  test:
+  linux:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -55,3 +54,61 @@ jobs:
 
       - name: Run booking tests
         run: ./build/test_booking
+
+  windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up MSYS2 MinGW-w64
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            mingw-w64-x86_64-gcc
+
+      - name: Build cancellation tests
+        run: |
+          mkdir -p build
+          g++ -std=c++17 -Wall -Wextra -pedantic \
+            -Isrc \
+            src/data_store.cpp \
+            src/validation.cpp \
+            src/reservation.cpp \
+            src/cancellation.cpp \
+            tests/test_cancellation.cpp \
+            -o build/test_cancellation.exe
+
+      - name: Run cancellation tests
+        run: ./build/test_cancellation.exe
+
+      - name: Build train search tests
+        run: |
+          g++ -std=c++17 -Wall -Wextra -pedantic \
+            -Isrc \
+            src/data_store.cpp \
+            src/validation.cpp \
+            src/booking.cpp \
+            tests/test_train_search.cpp \
+            -o build/test_train_search.exe
+
+      - name: Run train search tests
+        run: ./build/test_train_search.exe
+
+      - name: Build booking tests
+        run: |
+          g++ -std=c++17 -Wall -Wextra -pedantic \
+            -Isrc \
+            src/data_store.cpp \
+            src/validation.cpp \
+            src/booking.cpp \
+            tests/test_booking.cpp \
+            -o build/test_booking.exe
+
+      - name: Run booking tests
+        run: ./build/test_booking.exe
