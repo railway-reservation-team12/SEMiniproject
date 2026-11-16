@@ -106,6 +106,24 @@ int main() {
         );
     }
 
+    {
+    CinRedirect input("\nChennai\n");
+
+    check(
+        !searchTrains(trains),
+        "TC-002: Empty source is rejected"
+    );
+}
+
+{
+    CinRedirect input("Bengaluru\n\n");
+
+    check(
+        !searchTrains(trains),
+        "TC-002: Empty destination is rejected"
+    );
+}
+
     std::cout << "\n========================================\n";
     std::cout << "TRAIN SEARCH TEST SUMMARY\n";
     std::cout << "========================================\n";
