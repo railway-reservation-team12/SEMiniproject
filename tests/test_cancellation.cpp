@@ -16,6 +16,7 @@
 #include <string>
 #include <vector>
 #include <chrono>
+#include <sstream>
 
 // Test counters
 static int testsRun = 0;
@@ -41,6 +42,20 @@ static void createTestData(std::vector<Train>& trains, std::vector<Reservation>&
     reservations.push_back(r2);
     reservations.push_back(r3);
 }
+
+class CinRedirect {
+private:
+    std::istringstream input;
+    std::streambuf* oldBuffer;
+
+public:
+    explicit CinRedirect(const std::string& text)
+        : input(text), oldBuffer(std::cin.rdbuf(input.rdbuf())) {}
+
+    ~CinRedirect() {
+        std::cin.rdbuf(oldBuffer);
+    }
+};
 
 // Helper: report test result
 static void reportTest(const std::string& testId, const std::string& description, bool passed) {
@@ -266,6 +281,43 @@ void testPerformance() {
 // Validation function tests
 // FR-035, FR-036, SEC-001
 // ============================================================================
+
+void testInteractiveCancellationDeclined() {
+    std::vector<Train> trains;
+    std::vector<Reservation> reservations;
+    createTestData(trains, reservations);
+
+    const int seatsBefore = trains[0].availableSeats;
+
+    CinRedirect input("RES001\nN\n");
+
+    CancelResult result =
+        cancelReservationFlow(reservations, trains);
+
+    Reservation* reservation =
+        findReservationById(reservations, "RES001");
+
+    reportTest(
+        "TC-C11a",
+        "User-declined cancellation is rejected",
+        result == CANCEL_USER_DECLINED
+    );
+
+    reportTest(
+        "TC-C11b",
+        "Declined cancellation leaves reservation active",
+        reservation != nullptr &&
+        reservation->status == STATUS_CONFIRMED
+    );
+
+    reportTest(
+        "TC-C11c",
+        "Declined cancellation does not change seats",
+        trains[0].availableSeats == seatsBefore
+    );
+}
+
+
 void testValidation() {
     // Valid IDs
     bool passed = isValidReservationId("RES001");
@@ -324,6 +376,7 @@ int main() {
 
     std::cout << std::endl;
     std::cout << "--- Validation Tests ---" << std::endl;
+    testInteractiveCancellationDeclined();
     testValidation();
 
     // Summary

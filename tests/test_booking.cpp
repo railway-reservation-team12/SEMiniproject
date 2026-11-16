@@ -312,7 +312,122 @@ int main() {
             "BK-21: Seat count unchanged after invalid date"
         );
     }
+    // ------------------------------------------------------------
+    // TC-013: Invalid passenger age
+    // ------------------------------------------------------------
+    {
+        const size_t sizeBefore = reservations.size();
+        const int seatsBefore = trains[0].availableSeats;
 
+        CinRedirect input(
+            "T001\n"
+            "Eve Thomas\n"
+            "0\n"
+            "F\n"
+            "28-12-2026\n"
+            "1\n"
+        );
+
+        bool result = bookReservation(
+            trains,
+            reservations,
+            trainFile,
+            reservationFile
+        );
+
+        check(
+            !result,
+            "TC-013: Invalid passenger age is rejected"
+        );
+
+        check(
+            reservations.size() == sizeBefore,
+            "TC-013: Reservation list unchanged after invalid age"
+        );
+
+        check(
+            trains[0].availableSeats == seatsBefore,
+            "TC-013: Seat count unchanged after invalid age"
+        );
+    }
+
+    // ------------------------------------------------------------
+    // TC-013: Invalid passenger gender
+    // ------------------------------------------------------------
+    {
+        const size_t sizeBefore = reservations.size();
+        const int seatsBefore = trains[0].availableSeats;
+
+        CinRedirect input(
+            "T001\n"
+            "Frank Thomas\n"
+            "30\n"
+            "InvalidGender\n"
+            "28-12-2026\n"
+            "1\n"
+        );
+
+        bool result = bookReservation(
+            trains,
+            reservations,
+            trainFile,
+            reservationFile
+        );
+
+        check(
+            !result,
+            "TC-013: Invalid passenger gender is rejected"
+        );
+
+        check(
+            reservations.size() == sizeBefore,
+            "TC-013: Reservation list unchanged after invalid gender"
+        );
+
+        check(
+            trains[0].availableSeats == seatsBefore,
+            "TC-013: Seat count unchanged after invalid gender"
+        );
+    }
+
+    // ------------------------------------------------------------
+    // TC-013: Invalid seat count
+    // ------------------------------------------------------------
+    {
+        const size_t sizeBefore = reservations.size();
+        const int seatsBefore = trains[0].availableSeats;
+
+        CinRedirect input(
+            "T001\n"
+            "Grace Thomas\n"
+            "30\n"
+            "F\n"
+            "28-12-2026\n"
+            "0\n"
+        );
+
+        bool result = bookReservation(
+            trains,
+            reservations,
+            trainFile,
+            reservationFile
+        );
+
+        check(
+            !result,
+            "TC-013: Zero seat count is rejected"
+        );
+
+        check(
+            reservations.size() == sizeBefore,
+            "TC-013: Reservation list unchanged after invalid seat count"
+        );
+
+        check(
+            trains[0].availableSeats == seatsBefore,
+            "TC-013: Seat count unchanged after invalid seat count"
+        );
+    }
     // ------------------------------------------------------------
     // TC-004 / TC-012: Unique reservation references and restart
     // ------------------------------------------------------------
@@ -436,6 +551,54 @@ int main() {
             }
         }
     }
+
+    {
+    std::vector<Train> fullTrains = {
+        {
+            "T999",
+            "Full Train",
+            "Bengaluru",
+            "Chennai",
+            "06:00",
+            "12:00",
+            100,
+            0
+        }
+    };
+
+    std::vector<Reservation> fullReservations;
+
+    CinRedirect input(
+        "T999\n"
+        "Test Passenger\n"
+        "25\n"
+        "F\n"
+        "25-12-2026\n"
+        "1\n"
+    );
+
+    bool result = bookReservation(
+        fullTrains,
+        fullReservations,
+        "build/test_full_trains.dat",
+        "build/test_full_reservations.dat"
+    );
+
+    check(
+        !result,
+        "TC-005: Booking is rejected when no seats are available"
+    );
+
+    check(
+        fullReservations.empty(),
+        "TC-005: No reservation is created when seats are unavailable"
+    );
+
+    check(
+        fullTrains[0].availableSeats == 0,
+        "TC-005: Seat count remains unchanged after rejected booking"
+    );
+}
 
     // Clean up temporary test files.
     std::remove(trainFile.c_str());
