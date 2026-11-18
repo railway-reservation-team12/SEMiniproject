@@ -1,3 +1,4 @@
+
 # Branch Coverage Report
 
 ## 1. Environment
@@ -11,24 +12,24 @@
 
 Branch coverage measures how many decision outcomes in the application were executed during testing.
 
-| Metric                     |  Value |
-| -------------------------- | -----: |
-| Total Application Branches |    262 |
-| Covered Branches           |    160 |
-| Missed Branches            |    102 |
+| Metric                     | Value |
+| -------------------------- | ----: |
+| Total Application Branches |   262 |
+| Covered Branches           |   160 |
+| Missed Branches            |   102 |
 | Branch Coverage            | 61.07% |
 
 ## 3. Per-File Branch Coverage Results
 
 The following table presents the branch coverage results for the five application source files.
 
-| Source File      | Total Branches | Covered Branches | Missed Branches |   Coverage |
-| ---------------- | -------------: | ---------------: | --------------: | ---------: |
-| booking.cpp      |             38 |               33 |               5 |     86.84% |
-| cancellation.cpp |             40 |               21 |              19 |     52.50% |
-| data_store.cpp   |             74 |               33 |              41 |     44.59% |
-| reservation.cpp  |             26 |                8 |              18 |     30.77% |
-| validation.cpp   |             84 |               65 |              19 |     77.38% |
+| Source File      | Total Branches | Covered Branches | Missed Branches | Coverage |
+| ---------------- | -------------: | ---------------: | --------------: | -------: |
+| booking.cpp      |             38 |               33 |               5 | 86.84% |
+| cancellation.cpp |             40 |               21 |              19 | 52.50% |
+| data_store.cpp   |             74 |               33 |              41 | 44.59% |
+| reservation.cpp  |             26 |                8 |              18 | 30.77% |
+| validation.cpp   |             84 |               65 |              19 | 77.38% |
 | **TOTAL**        |        **262** |          **160** |         **102** | **61.07%** |
 
 ## 4. Branch Coverage Analysis

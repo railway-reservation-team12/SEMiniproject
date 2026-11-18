@@ -1,5 +1,7 @@
 #include "booking.h"
 #include "models.h"
+#include "data_store.h"
+#include "validation.h"
 
 #include <cstdio>
 #include <iostream>
@@ -310,6 +312,293 @@ int main() {
             "BK-21: Seat count unchanged after invalid date"
         );
     }
+    // ------------------------------------------------------------
+    // TC-013: Invalid passenger age
+    // ------------------------------------------------------------
+    {
+        const size_t sizeBefore = reservations.size();
+        const int seatsBefore = trains[0].availableSeats;
+
+        CinRedirect input(
+            "T001\n"
+            "Eve Thomas\n"
+            "0\n"
+            "F\n"
+            "28-12-2026\n"
+            "1\n"
+        );
+
+        bool result = bookReservation(
+            trains,
+            reservations,
+            trainFile,
+            reservationFile
+        );
+
+        check(
+            !result,
+            "TC-013: Invalid passenger age is rejected"
+        );
+
+        check(
+            reservations.size() == sizeBefore,
+            "TC-013: Reservation list unchanged after invalid age"
+        );
+
+        check(
+            trains[0].availableSeats == seatsBefore,
+            "TC-013: Seat count unchanged after invalid age"
+        );
+    }
+
+    // ------------------------------------------------------------
+    // TC-013: Invalid passenger gender
+    // ------------------------------------------------------------
+    {
+        const size_t sizeBefore = reservations.size();
+        const int seatsBefore = trains[0].availableSeats;
+
+        CinRedirect input(
+            "T001\n"
+            "Frank Thomas\n"
+            "30\n"
+            "InvalidGender\n"
+            "28-12-2026\n"
+            "1\n"
+        );
+
+        bool result = bookReservation(
+            trains,
+            reservations,
+            trainFile,
+            reservationFile
+        );
+
+        check(
+            !result,
+            "TC-013: Invalid passenger gender is rejected"
+        );
+
+        check(
+            reservations.size() == sizeBefore,
+            "TC-013: Reservation list unchanged after invalid gender"
+        );
+
+        check(
+            trains[0].availableSeats == seatsBefore,
+            "TC-013: Seat count unchanged after invalid gender"
+        );
+    }
+
+    // ------------------------------------------------------------
+    // TC-013: Invalid seat count
+    // ------------------------------------------------------------
+    {
+        const size_t sizeBefore = reservations.size();
+        const int seatsBefore = trains[0].availableSeats;
+
+        CinRedirect input(
+            "T001\n"
+            "Grace Thomas\n"
+            "30\n"
+            "F\n"
+            "28-12-2026\n"
+            "0\n"
+        );
+
+        bool result = bookReservation(
+            trains,
+            reservations,
+            trainFile,
+            reservationFile
+        );
+
+        check(
+            !result,
+            "TC-013: Zero seat count is rejected"
+        );
+
+        check(
+            reservations.size() == sizeBefore,
+            "TC-013: Reservation list unchanged after invalid seat count"
+        );
+
+        check(
+            trains[0].availableSeats == seatsBefore,
+            "TC-013: Seat count unchanged after invalid seat count"
+        );
+    }
+    // ------------------------------------------------------------
+    // TC-004 / TC-012: Unique reservation references and restart
+    // ------------------------------------------------------------
+    {
+        CinRedirect input(
+            "T001\n"
+            "Second Passenger\n"
+            "30\n"
+            "M\n"
+            "27-12-2026\n"
+            "1\n"
+        );
+
+        bool secondBooking = bookReservation(
+            trains,
+            reservations,
+            trainFile,
+            reservationFile
+        );
+
+        check(
+            secondBooking,
+            "TC-004: Second booking succeeds"
+        );
+
+        check(
+            reservations.size() == 2,
+            "TC-004: Two successful bookings are stored"
+        );
+
+        if (reservations.size() >= 2) {
+            const std::string& firstId = reservations[0].reservationId;
+            const std::string& secondId = reservations[1].reservationId;
+
+            check(
+                firstId != secondId,
+                "TC-004: Successful bookings receive unique reservation references"
+            );
+
+            check(
+                isValidReservationId(firstId) &&
+                isValidReservationId(secondId) &&
+                firstId.length() <= 20 &&
+                secondId.length() <= 20,
+                "TC-004: Reservation references satisfy the 20-character format"
+            );
+
+            std::cout << "Evidence: Booking 1 reference = "
+                      << firstId << '\n';
+
+            std::cout << "Evidence: Booking 2 reference = "
+                      << secondId << '\n';
+        }
+
+        // Simulate program restart by reloading persisted reservations.
+        std::vector<Reservation> reloadedReservations =
+            loadReservations(reservationFile);
+
+        check(
+            reloadedReservations.size() == 2,
+            "TC-012: Reservations persist across program restart"
+        );
+
+        if (reloadedReservations.size() >= 2) {
+            reservations = reloadedReservations;
+
+            CinRedirect inputAfterRestart(
+                "T001\n"
+                "Third Passenger\n"
+                "28\n"
+                "F\n"
+                "28-12-2026\n"
+                "1\n"
+            );
+
+            bool thirdBooking = bookReservation(
+                trains,
+                reservations,
+                trainFile,
+                reservationFile
+            );
+
+            check(
+                thirdBooking,
+                "TC-012: Booking succeeds after program restart"
+            );
+
+            check(
+                reservations.size() == 3,
+                "TC-012: Third booking is stored after restart"
+            );
+
+            if (reservations.size() == 3) {
+                const std::string& firstId =
+                    reservations[0].reservationId;
+
+                const std::string& secondId =
+                    reservations[1].reservationId;
+
+                const std::string& thirdId =
+                    reservations[2].reservationId;
+
+                check(
+                    thirdId != firstId &&
+                    thirdId != secondId,
+                    "TC-012: Post-restart reservation reference remains unique"
+                );
+
+                check(
+                    isValidReservationId(thirdId) &&
+                    thirdId.length() <= 20,
+                    "TC-012: Post-restart reference satisfies the 20-character format"
+                );
+
+                std::cout << "Evidence: Reloaded references = "
+                          << firstId << ", "
+                          << secondId << '\n';
+
+                std::cout << "Evidence: Post-restart booking reference = "
+                          << thirdId << '\n';
+            }
+        }
+    }
+
+    {
+    std::vector<Train> fullTrains = {
+        {
+            "T999",
+            "Full Train",
+            "Bengaluru",
+            "Chennai",
+            "06:00",
+            "12:00",
+            100,
+            0
+        }
+    };
+
+    std::vector<Reservation> fullReservations;
+
+    CinRedirect input(
+        "T999\n"
+        "Test Passenger\n"
+        "25\n"
+        "F\n"
+        "25-12-2026\n"
+        "1\n"
+    );
+
+    bool result = bookReservation(
+        fullTrains,
+        fullReservations,
+        "build/test_full_trains.dat",
+        "build/test_full_reservations.dat"
+    );
+
+    check(
+        !result,
+        "TC-005: Booking is rejected when no seats are available"
+    );
+
+    check(
+        fullReservations.empty(),
+        "TC-005: No reservation is created when seats are unavailable"
+    );
+
+    check(
+        fullTrains[0].availableSeats == 0,
+        "TC-005: Seat count remains unchanged after rejected booking"
+    );
+}
 
     // Clean up temporary test files.
     std::remove(trainFile.c_str());
@@ -318,6 +607,7 @@ int main() {
     // ------------------------------------------------------------
     // Summary
     // ------------------------------------------------------------
+
     std::cout << "\n========================================\n";
     std::cout << "BOOKING TEST SUMMARY\n";
     std::cout << "========================================\n";
