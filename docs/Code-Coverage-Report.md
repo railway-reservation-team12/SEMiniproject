@@ -1,87 +1,93 @@
+
 # Code Coverage Report
 
-## Environment
+## 1. Environment
 
-- Operating system: macOS
+- Operating System: macOS
 - Compiler: Apple Clang / LLVM 21.0.0
-- Standard: C++17
-- Tests executed: 76
-- Execution date: 2026-11-16
+- Programming Language Standard: C++17
+- Tests Executed: 76
+- Execution Date: 2026-11-16
 
-## Application Source Coverage
+## 2. Overall Application Source Coverage
 
-| Metric | Coverage |
-|---|---:|
-| Region coverage | 77.85% |
-| Function coverage | 92.86% |
-| Line coverage | 73.30% |
-| Branch coverage | 61.07% |
+| Metric            | Covered | Total | Coverage |
+| ----------------- | ------: | ----: | -------: |
+| Region Coverage   |     253 |   325 |   77.85% |
+| Function Coverage |      26 |    28 |   92.86% |
+| Line Coverage     |     398 |   543 |   73.30% |
+| Branch Coverage   |     160 |   262 |   61.07% |
 
-## Source Coverage Details
+## 3. Source Coverage Details
 
-| Source file | Line coverage | Branch coverage |
-|---|---:|---:|
-| booking.cpp | 88.72% | 86.84% |
-| cancellation.cpp | 56.44% | 52.50% |
-| data_store.cpp | 70.59% | 44.59% |
-| reservation.cpp | 50.00% | 30.77% |
-| validation.cpp | 100.00% | 77.38% |
+The following table presents the line coverage results for the five application source files.
 
-## Method
+| Source File      | Total Lines | Covered Lines | Missed Lines |   Coverage |
+| ---------------- | ----------: | ------------: | -----------: | ---------: |
+| booking.cpp      |         133 |           118 |           15 |     88.72% |
+| cancellation.cpp |         101 |            57 |           44 |     56.44% |
+| data_store.cpp   |         153 |           108 |           45 |     70.59% |
+| reservation.cpp  |          82 |            41 |           41 |     50.00% |
+| validation.cpp   |          74 |            74 |            0 |    100.00% |
+| **TOTAL**        |     **543** |       **398** |      **145** | **73.30%** |
 
-Coverage was generated with LLVM instrumentation using:
+## 4. Function Coverage Details
+
+Function coverage indicates how many application functions were executed during the test execution.
+
+| Source File      | Total Functions | Executed Functions | Missed Functions |   Coverage |
+| ---------------- | --------------: | -----------------: | ---------------: | ---------: |
+| booking.cpp      |               5 |                  5 |                0 |    100.00% |
+| cancellation.cpp |               3 |                  3 |                0 |    100.00% |
+| data_store.cpp   |               9 |                  8 |                1 |     88.89% |
+| reservation.cpp  |               4 |                  3 |                1 |     75.00% |
+| validation.cpp   |               7 |                  7 |                0 |    100.00% |
+| **TOTAL**        |          **28** |             **26** |            **2** | **92.86%** |
+
+## 5. Coverage Analysis
+
+- The application achieved an overall line coverage of 73.30%.
+- Function coverage reached 92.86%, indicating that most application functions were executed.
+- The validation module achieved 100.00% line coverage.
+- The booking module achieved 88.72% line coverage.
+- The cancellation module achieved 56.44% line coverage.
+- The reservation module achieved 50.00% line coverage.
+- The data storage module achieved 70.59% line coverage.
+
+The cancellation and reservation modules have comparatively lower line coverage and should be considered for additional testing.
+
+## 6. Coverage Generation Method
+
+Coverage was generated using LLVM instrumentation.
+
+The following compiler and coverage tools were used:
 
 - `-fprofile-instr-generate`
 - `-fcoverage-mapping`
 - `llvm-profdata merge`
 - `llvm-cov report`
 
-Test files were excluded using:
+Test files were excluded from the application source coverage report using:
 
-```text
--ignore-filename-regex='tests/'
+`-ignore-filename-regex='tests/'`
 
+The generated coverage report provided region, function, line, and branch coverage information.
 
-```bash
-cat > docs/Branch-Coverage-Report.md <<'EOF'
-# Branch Coverage Report
+## 7. Follow-up Actions
 
-## Environment
+The following actions are recommended to improve code coverage:
 
-- Operating system: macOS
-- Compiler: Apple Clang / LLVM 21.0.0
-- Standard: C++17
-- Execution date: 2026-11-16
+1. Add additional test cases for uncovered cancellation functionality.
+2. Improve test coverage for reservation lookup and display operations.
+3. Investigate the two functions that were not executed during testing.
+4. Add test cases for persistence and file-handling operations.
+5. Review error-handling and fallback paths in the data storage module.
+6. Re-run coverage after integrating additional test cases.
 
-## Result
+## 8. Conclusion
 
-| Metric | Value |
-|---|---:|
-| Total application branches | 262 |
-| Covered branches | 160 |
-| Missed branches | 102 |
-| Branch coverage | 61.07% |
+The Railway Reservation System achieved 73.30% line coverage and 92.86% function coverage across the five selected application source files.
 
-## Per-File Results
+The validation and booking modules demonstrated relatively strong coverage, while the cancellation and reservation modules have opportunities for improvement.
 
-| Source file | Total branches | Missed branches | Coverage |
-|---|---:|---:|---:|
-| booking.cpp | 38 | 5 | 86.84% |
-| cancellation.cpp | 40 | 19 | 52.50% |
-| data_store.cpp | 74 | 41 | 44.59% |
-| reservation.cpp | 26 | 18 | 30.77% |
-| validation.cpp | 84 | 19 | 77.38% |
-
-## Method
-
-Branch coverage was obtained from the `Branches`, `Missed Branches`, and `Cover` columns produced by `llvm-cov report`.
-
-The installed Apple LLVM version did not support `-show-branches=count`. The standard LLVM coverage report still provided branch totals and percentages.
-
-## Coverage Gaps
-
-- Persistence and file-error paths
-- Missing reservation or train records
-- Cancellation storage failures
-- Reservation display fallback paths
-- Less-common validation branches
+Additional testing of uncovered functionality can help improve the overall reliability and test coverage of the application.
