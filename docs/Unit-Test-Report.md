@@ -38,6 +38,6 @@
 ## Verification & Limitations Notes
 
 - Journey-date filtering is not tested in route search because the current search function matches routes by source and destination; journey date is validated during booking.
-- Cancellation confirmation with `Y` writes persistent data and was verified via interactive system CLI testing (TC-SYS-C02 in `docs/System-Validation-Report.md` and `docs/Vinay_Reservation_Cancellation_Report.md`).
+- Cancellation confirmation with `Y` writes persistent data and was verified via interactive system CLI testing (TC-SYS-C02 in `docs/System-Validation-Report.md` and `docs/Reservation_Cancellation_Report.md`).
 - Same-operation retry behavior is handled at the interactive menu loop level.
 

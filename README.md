@@ -72,7 +72,7 @@ The **Railway Reservation System** is a modular, high-reliability academic softw
 * [docs/Code-Coverage-Report.md](docs/Code-Coverage-Report.md): LLVM instrumentation coverage analysis (**73.30% line coverage, 92.86% function coverage, 100% validation coverage**).
 * [docs/Branch-Coverage-Report.md](docs/Branch-Coverage-Report.md): LLVM branch coverage report (**61.07% application branch coverage**).
 * [docs/Inspection-001-Modularity-Testability.md](docs/Inspection-001-Modularity-Testability.md): Architectural inspection verifying component modularity.
-* [docs/Vinay_Reservation_Cancellation_Report.md](docs/Vinay_Reservation_Cancellation_Report.md): Lookup & cancellation module testing report.
+* [docs/Reservation_Cancellation_Report.md](docs/Reservation_Cancellation_Report.md): Lookup & cancellation module testing report.
 
 ---
 
