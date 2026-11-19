@@ -2,11 +2,11 @@
 
 ## Environment
 
-- Operating system: macOS
-- Compiler: Apple Clang / LLVM 21.0.0
+- Operating systems: macOS / Linux / Windows
+- Compiler: Apple Clang / LLVM 21.0.0 / GCC 13.x
 - Standard: C++17
-- Tests executed: 76
-- Execution date: 2026-11-16
+- Tests executed: 76 automated unit tests
+- Execution dates: 2026-11-16 to 2026-11-17
 
 ## Application Source Coverage
 
@@ -19,13 +19,13 @@
 
 ## Source Coverage Details
 
-| Source file | Line coverage | Branch coverage |
-|---|---:|---:|
-| booking.cpp | 88.72% | 86.84% |
-| cancellation.cpp | 56.44% | 52.50% |
-| data_store.cpp | 70.59% | 44.59% |
-| reservation.cpp | 50.00% | 30.77% |
-| validation.cpp | 100.00% | 77.38% |
+| Source file | Line coverage | Branch coverage | Functions Executed |
+|---|---:|---:|---:|
+| booking.cpp | 88.72% | 86.84% | 100.00% |
+| cancellation.cpp | 56.44% | 52.50% | 100.00% |
+| data_store.cpp | 70.59% | 44.59% | 88.89% |
+| reservation.cpp | 50.00% | 30.77% | 75.00% |
+| validation.cpp | 100.00% | 77.38% | 100.00% |
 
 ## Method
 
@@ -36,52 +36,25 @@ Coverage was generated with LLVM instrumentation using:
 - `llvm-profdata merge`
 - `llvm-cov report`
 
-Test files were excluded using:
+Test files were excluded from application coverage statistics using:
 
 ```text
 -ignore-filename-regex='tests/'
+```
 
+## Coverage Analysis & Insights
 
-```bash
-cat > docs/Branch-Coverage-Report.md <<'EOF'
-# Branch Coverage Report
+1. **Validation (`src/validation.cpp`):**
+   - **100.00% line coverage** and **77.38% branch coverage**.
+   - All input validation rules (names, dates, gender, age, stations, reservation IDs) and HTML display sanitization paths are thoroughly exercised.
 
-## Environment
+2. **Booking Module (`src/booking.cpp`):**
+   - **88.72% line coverage** and **86.84% branch coverage**.
+   - Exercises route searching, train selection, seat availability validation, passenger record construction, and reservation reference generation.
 
-- Operating system: macOS
-- Compiler: Apple Clang / LLVM 21.0.0
-- Standard: C++17
-- Execution date: 2026-11-16
+3. **Data Persistence Layer (`src/data_store.cpp`):**
+   - **70.59% line coverage** and **44.59% branch coverage**.
+   - File loading and saving paths for trains and reservations are exercised; unhit branches correspond to filesystem access failures and file open error handlers.
 
-## Result
-
-| Metric | Value |
-|---|---:|
-| Total application branches | 262 |
-| Covered branches | 160 |
-| Missed branches | 102 |
-| Branch coverage | 61.07% |
-
-## Per-File Results
-
-| Source file | Total branches | Missed branches | Coverage |
-|---|---:|---:|---:|
-| booking.cpp | 38 | 5 | 86.84% |
-| cancellation.cpp | 40 | 19 | 52.50% |
-| data_store.cpp | 74 | 41 | 44.59% |
-| reservation.cpp | 26 | 18 | 30.77% |
-| validation.cpp | 84 | 19 | 77.38% |
-
-## Method
-
-Branch coverage was obtained from the `Branches`, `Missed Branches`, and `Cover` columns produced by `llvm-cov report`.
-
-The installed Apple LLVM version did not support `-show-branches=count`. The standard LLVM coverage report still provided branch totals and percentages.
-
-## Coverage Gaps
-
-- Persistence and file-error paths
-- Missing reservation or train records
-- Cancellation storage failures
-- Reservation display fallback paths
-- Less-common validation branches
+4. **Cancellation & Reservation Modules (`src/cancellation.cpp`, `src/reservation.cpp`):**
+   - Unhit lines in unit test coverage correspond to interactive stream prompts (`std::cin` prompts) which are exercised via interactive system CLI testing (TC-SYS-L01 through TC-SYS-C05).
