@@ -1,2 +1,3 @@
 build/*.exe
 data/*.backup.dat
+~$*
