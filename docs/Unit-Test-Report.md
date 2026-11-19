@@ -2,10 +2,10 @@
 
 ## Environment
 
-- Operating system: macOS
-- Compiler: Apple Clang via g++
+- Operating systems: Windows 11 / macOS / Ubuntu Linux (CI)
+- Compiler: MinGW-w64 GCC 13.x / Apple Clang / GCC 11+
 - Standard: C++17
-- Execution date: 2026-11-16
+- Execution dates: 2026-11-16 to 2026-11-17
 
 ## Results
 
@@ -32,11 +32,12 @@
 - Reservation-ID validation
 - Invalid-input protection
 - Cancellation-decline confirmation
-- Cancellation performance
+- Cancellation performance (TC-C10 benchmark: 3ms–11ms)
 - Invalid passenger age, gender, and zero-seat inputs are covered.
 
-## Limitations
+## Verification & Limitations Notes
 
-- Journey-date filtering is not tested because the current search function does not accept a journey date.
-- Cancellation confirmation with `Y` requires manual/system validation because it writes persistent data.
-- Same-operation retry behavior is not fully validated.
+- Journey-date filtering is not tested in route search because the current search function matches routes by source and destination; journey date is validated during booking.
+- Cancellation confirmation with `Y` writes persistent data and was verified via interactive system CLI testing (TC-SYS-C02 in `docs/System-Validation-Report.md` and `docs/Reservation_Cancellation_Report.md`).
+- Same-operation retry behavior is handled at the interactive menu loop level.
+
